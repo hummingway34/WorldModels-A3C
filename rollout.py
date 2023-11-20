@@ -4,7 +4,7 @@ import gym
 from hparams import HyperParams as hp
 
 def rollout():
-    env = gym.make("CarRacing-v0")
+    env = gym.make("CarRacing-v2")
 
     seq_len = 1000
     max_ep = hp.n_rollout
@@ -16,15 +16,15 @@ def rollout():
         obs_lst, action_lst, reward_lst, next_obs_lst, done_lst = [], [], [], [], []
         env.reset()
         action = env.action_space.sample()
-        obs, reward, done, _ = env.step(action)
+        obs, reward, done, truncated, _ = env.step(action)
         done = False
         t = 0
         
-        while not done or t < seq_len:
+        while done or t < seq_len:
             t += 1
 
             action = env.action_space.sample()
-            next_obs, reward, done, _ = env.step(action)
+            next_obs, reward, done, truncated, _ = env.step(action)
 
             np.savez(
                 os.path.join(feat_dir, 'rollout_{:03d}_{:04d}'.format(ep,t)),
@@ -49,6 +49,7 @@ def rollout():
             next_obs=np.stack(next_obs_lst, axis=0), # (T, C, H, W)
             done=np.stack(done_lst, axis=0), # (T, 1)
         )
+        print(ep, 'is finished and saved.')
         
         
 

@@ -11,7 +11,7 @@ from torchvision.utils import save_image
 from torch.nn import functional as F
 from datetime import datetime
 
-DEVICE = None
+DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 def train():
     global_step = 0
